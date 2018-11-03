@@ -22,7 +22,7 @@ class Main {
         Points points = new Points(goal);
         rp = new ResearcherPool();
         int numStartups = 0;
-        int numTurns = 0;
+        int numTurns = 1;
         boolean gameIsLive = true;
         GUI gui;
         Thread guiThread;
@@ -94,6 +94,11 @@ class Main {
                 // should be replaced with a "YOU'RE A WINNER" screen later.
                 gui.hideFrame();
 
+                String pointsSummary = Arrays.toString(points.getPointsArray());
+
+                GameOverGUI gameOverGUI = new GameOverGUI(numTurns, pointsSummary);
+                Thread gameOverGUIThread = new Thread(gameOverGUI);
+                gameOverGUIThread.start();
             }
             //toggle.setToggle(0);
             latch.reset();
@@ -104,8 +109,10 @@ class Main {
         }
         System.out.println("CONGRATULATIONS! YOU WON!\nFinal points : " + Arrays.toString(points.getPointsArray()));
         System.out.println("Number of turns : " + numTurns);
-        gui.closeFrame();
-        System.exit(0);
+//        gui.showGameOver();
+
+//        gui.closeFrame();
+//        System.exit(0);
 
 
         //guiThread.interrupt();

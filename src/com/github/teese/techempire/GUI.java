@@ -59,7 +59,7 @@ public class GUI implements ActionListener, Runnable{
         // EXIT_ON_CLOSE : java program will be terminated. Currently a bug makes window disappear when this is used..
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        map = new HashMap();
+        map = new HashMap<>();
 
         northPanel = new MyNorthPanel();
         //JButton northButton = new JButton("Pick a researcher to fund");
@@ -97,7 +97,7 @@ public class GUI implements ActionListener, Runnable{
         // get the button text (e.g. <html><center> Lukclod<br>hIndex = 38<br>age = 28<br>reviews = [386, 343, 389]
         String s = event.getActionCommand();
         // get the choice number
-        String myChoiceStr = (String) map.get(s);
+        String myChoiceStr = map.get(s);
         myChoice = Integer.parseInt(myChoiceStr);
         System.out.println("you chose " + myChoice + ", " + choices.get(myChoice).getResearcher().getName());
         // display a new selection of choices
@@ -112,7 +112,7 @@ public class GUI implements ActionListener, Runnable{
      * Resets the buttons to show new researcher choices
      * Resets the hashmap (python dictionary), which helps match the button text to the choice number
      */
-    void resetButtonsAndHashmap(){
+    private void resetButtonsAndHashmap(){
         map = new HashMap<>();
         for (int i = 0; i < 4; i++) {
             grantApplicationList = new ArrayList<GrantApplication>();
@@ -126,8 +126,6 @@ public class GUI implements ActionListener, Runnable{
             jb.setText(buttonText);
         }
     }
-
-    //
     void resetChoices(ArrayList<GrantApplication> choices){
         this.choices = choices;
     }
