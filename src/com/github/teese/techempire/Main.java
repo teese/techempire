@@ -1,5 +1,10 @@
 package com.github.teese.techempire;
 
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,14 +18,15 @@ class Main {
     void start(){
         long endTime;
         long timeElapsed;
-        ResearcherPool rp;
+        ArrayList<Researcher> rp;
         ArrayList<GrantApplication> choices;
         int MyChoice;
 
         final long startTime = System.currentTimeMillis();
         int goal = 200;
         Points points = new Points(goal);
-        rp = new ResearcherPool();
+        rp = ResearcherPool.fromCSV(20);
+        System.out.println("rp length " + rp.size());
         int numStartups = 0;
         int numTurns = 1;
         boolean gameIsLive = true;
@@ -49,7 +55,6 @@ class Main {
         // current thread will wait until the guiThread is finished.
         // after this, GUI is no longer running in a separate thread
         try {guiThread.join();} catch (InterruptedException ex) {ex.printStackTrace();}
-
 
         while (gameIsLive) {
 

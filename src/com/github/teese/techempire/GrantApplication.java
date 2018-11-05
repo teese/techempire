@@ -1,5 +1,6 @@
 package com.github.teese.techempire;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -12,12 +13,12 @@ public class GrantApplication {
     private String[] peerReviewsText;
 
     private Result result;
-    GrantApplication(ResearcherPool rp){
+    GrantApplication(ArrayList<Researcher> rp){
         int randomIndex;
         FieldPercentages fieldPercentages;
         // currently allows 2 applications from same researcher
-        randomIndex = (int) (Math.random() * rp.getSize());
-        r = rp.getResearcher(randomIndex);
+        randomIndex = (int) (Math.random() * rp.size());
+        r = rp.get(randomIndex);
         randomQuality = (int) (Math.random() * 50);
         proposalQuality = Math.round(r.getQuality() + randomQuality);
         Random random = new Random();
@@ -47,12 +48,12 @@ public class GrantApplication {
 
 //    public String getSummary(){
 //        String summary = String.format("%s randomly selected. hIndex = %d, age = %d, researcherQuality = %.2f, randomQuality = %d, proposalQuality = %d, reviews = %s",
-//                r.name, r.getHindex(), r.getAge(), r.getQuality(), randomQuality, proposalQuality, Arrays.toString(peerReviewsText));
+//                r.name, r.getHindex(), r.getAge(), r.generateRandomQuality(), randomQuality, proposalQuality, Arrays.toString(peerReviewsText));
 //        return summary;
 //    }
 //    public void printSummary(){
 //        String summary = String.format("%s randomly selected. hIndex = %d, age = %d, researcherQuality = %.2f, randomQuality = %d, proposalQuality = %d, reviews = %s",
-//                r.name, r.getHindex(), r.getAge(), r.getQuality(), randomQuality, proposalQuality, Arrays.toString(peerReviews));
+//                r.name, r.getHindex(), r.getAge(), r.generateRandomQuality(), randomQuality, proposalQuality, Arrays.toString(peerReviews));
 //        System.out.println(summary);
 //
 //        //System.out.println(r.name + " randomly selected. Quality = " + proposalQuality + "reviews = " + Arrays.toString(peerReviews));
@@ -77,7 +78,7 @@ public class GrantApplication {
     }
     String getButtonText(){
         String buttonText = String.format("<html><center> %s<br>hIndex = %d<br>age = %d<br>reviews = %s",
-                r.getName(), r.getHindex(), r.getAge(), Arrays.toString(peerReviewsText));
+                r.getName(), r.gethIndex(), r.getAge(), Arrays.toString(peerReviewsText));
         return buttonText;
     }
 }
