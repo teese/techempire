@@ -27,7 +27,7 @@ Currently only the initial part of the game is initiated.
 ![choose researcher](https://raw.githubusercontent.com/teese/techempire/master/docs/images/gameover.png)
 
 
-To play. Run the jarfile in the out/artefacts/techempire_jar folder. As arguments, include the number of points required to win, and the csv file containing the researchers.
+To play. Run the jarfile in the out/artefacts/techempire_jar folder.  As arguments, include the number of points required to win, and the csv file containing the researchers.
 e.g.
 
     java -jar techempire.jar -p 1000 -r D:\github_projects\techempire\docs\researchers.csv
