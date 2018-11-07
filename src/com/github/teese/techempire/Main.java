@@ -1,36 +1,42 @@
 package com.github.teese.techempire;
 
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 class Main {
+    public static String exampleCommand = "As arguments, please include the number of points required to win, and the path to the researcher CSV file.\ne.g.\n java -jar techempire.jar -p 1000 -r D:\\\\github_projects\\\\techempire\\\\docs\\\\researchers.csv";
 
     public static void main (String[] args) {
         Main main = new Main();
-        main.start();
+        main.start(args);
     }
 
-    void start(){
+    void start(String[] args){
         long endTime;
         long timeElapsed;
         ArrayList<Researcher> rp;
         ArrayList<GrantApplication> choices;
         int MyChoice;
+        String researchersCSV = "";
+        int pointsToWin = 0;
 
+        if (args.length != 0) {
+            if (args[0].equals("-p") && args[2].equals("-r")){
+                pointsToWin = Integer.parseInt(args[1]);
+                researchersCSV = args[3];
+            }
+        } else {
+            System.out.println("Error. " + exampleCommand);
+            System.exit(1);
+        }
         final long startTime = System.currentTimeMillis();
-        int goal = 200;
-        Points points = new Points(goal);
-        rp = ResearcherPool.fromCSV(20);
+        Points points = new Points(pointsToWin);
+        rp = ResearcherPool.fromCSV(40, researchersCSV);
         System.out.println("rp length " + rp.size());
         int numStartups = 0;
         int numTurns = 1;
         boolean gameIsLive = true;
-        GUI gui;
+        GUIchoices gui;
         Thread guiThread;
 
         //ResultQueue resultqueue = new ResultQueue();
@@ -45,15 +51,15 @@ class Main {
         ResettableCountDownLatch latch = new ResettableCountDownLatch(numThreadsToWaitFor);
 
         /*
-         * Starting GUI in a separate thread is not fully necessary at the moment.
+         * Starting GUIchoices in a separate thread is not fully necessary at the moment.
          * However seems to run more consistently faster. (400-500 ms until choices, rather than 400-1000)
          * Later the multithreading might be more useful
          */
-        gui = new GUI(latch);
+        gui = new GUIchoices(latch);
         guiThread = new Thread(gui);
         guiThread.start();
         // current thread will wait until the guiThread is finished.
-        // after this, GUI is no longer running in a separate thread
+        // after this, GUIchoices is no longer running in a separate thread
         try {guiThread.join();} catch (InterruptedException ex) {ex.printStackTrace();}
 
         while (gameIsLive) {
@@ -71,9 +77,9 @@ class Main {
             //https://www.youtube.com/watch?v=59oQfkdn5mA
             //CountDownLatch latch = new CountDownLatch(numThreadsToWaitFor);
 
-            endTime = System.currentTimeMillis();
-            timeElapsed = endTime - startTime;
-            System.out.println("time elapsed before choices = " + timeElapsed);
+            //endTime = System.currentTimeMillis();
+            //timeElapsed = endTime - startTime;
+            //System.out.println("time elapsed before choices = " + timeElapsed);
 
             // ask user for choices, and wait until the gui has the user input
             gui.showNewChoices(choices);
@@ -85,13 +91,14 @@ class Main {
             // get user choice, which should now be available
             MyChoice = gui.getMyChoice();
             // print your result
-            // SHOULD BE REPLACED WITH A GUI...
+            // SHOULD BE REPLACED WITH A GUIchoices...
             GrantApplication chosenGA = choices.get(MyChoice);
             Result result = chosenGA.getResult();
-            System.out.println(" result biol " + result.Biol + " result Phys " + result.Phys + " result Chem " + result.Chem);
+            System.out.println("Points added : Biol " + result.getBiol() + " Phys " + result.getPhys() + " Chem " + result.getChem());
             // Add result to the user final points
             points.add(result);
-            System.out.println(" points " + Arrays.toString(points.getPointsArray()));
+
+            System.out.println("Total points : Biol " + points.getBiol() + " Phys " + points.getPhys() + " Chem " + points.getChem());
 
             if (points.hasAchievedGoal()){
                 gameIsLive = false;
@@ -101,7 +108,7 @@ class Main {
 
                 String pointsSummary = Arrays.toString(points.getPointsArray());
 
-                GameOverGUI gameOverGUI = new GameOverGUI(numTurns, pointsSummary);
+                GUIgameover gameOverGUI = new GUIgameover(numTurns, points.getPointsArray());
                 Thread gameOverGUIThread = new Thread(gameOverGUI);
                 gameOverGUIThread.start();
             }
@@ -112,7 +119,8 @@ class Main {
             //System.out.println("time elapsed = " + timeElapsed);
             numTurns++;
         }
-        System.out.println("CONGRATULATIONS! YOU WON!\nFinal points : " + Arrays.toString(points.getPointsArray()));
+        System.out.println("\nCONGRATULATIONS! YOU WON!");
+        System.out.println("Final points : Biol " + points.getBiol() + " Phys " + points.getPhys() + " Chem " + points.getChem());
         System.out.println("Number of turns : " + numTurns);
 //        gui.showGameOver();
 
@@ -145,9 +153,9 @@ class Main {
 }
 
 class Points {
-    private int Biol;
-    private int Phys;
-    private int Chem;
+    private int biol;
+    private int phys;
+    private int chem;
     private boolean achievedGoal;
     private Result r;
     private int goal;
@@ -159,21 +167,61 @@ class Points {
         goal = inputGoal;
     }
     void add(Result r){
-        Biol += r.Biol;
-        Phys += r.Phys;
-        Chem += r.Chem;
-        if (Biol > goal || Phys > goal || Chem > goal){
+        biol += r.getBiol();
+        phys += r.getPhys();
+        chem += r.getChem();
+        if (biol > goal || phys > goal || chem > goal){
             achievedGoal = true;
         }
     }
     int[] getPointsArray(){
         int[] ar = new int[3];
-        ar[0] = Biol;
-        ar[1] = Phys;
-        ar[2] = Chem;
+        ar[0] = biol;
+        ar[1] = phys;
+        ar[2] = chem;
         return ar;
     }
     boolean hasAchievedGoal(){
         return achievedGoal;
+    }
+
+    public int getBiol() {
+        return biol;
+    }
+
+    public void setBiol(int biol) {
+        this.biol = biol;
+    }
+
+    public int getPhys() {
+        return phys;
+    }
+
+    public void setPhys(int phys) {
+        this.phys = phys;
+    }
+
+    public int getChem() {
+        return chem;
+    }
+
+    public void setChem(int chem) {
+        this.chem = chem;
+    }
+
+    public boolean isAchievedGoal() {
+        return achievedGoal;
+    }
+
+    public void setAchievedGoal(boolean achievedGoal) {
+        this.achievedGoal = achievedGoal;
+    }
+
+    public Result getR() {
+        return r;
+    }
+
+    public void setR(Result r) {
+        this.r = r;
     }
 }

@@ -77,7 +77,7 @@ public class GrantApplication {
         return peerReviewsText;
     }
     String getButtonText(){
-        String buttonText = String.format("<html><center> %s<br>hIndex = %d<br>age = %d<br>reviews = %s",
+        String buttonText = String.format("<html><center> %s<br>h-index = %d<br>age = %d<br>reviews = %s",
                 r.getName(), r.gethIndex(), r.getAge(), Arrays.toString(peerReviewsText));
         return buttonText;
     }

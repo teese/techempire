@@ -4,11 +4,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 class Result{
-    int Biol;
-    int Phys;
-    int Chem;
-    FieldPercentages fieldPercentages;
-    int proposalQuality;
+    private int Biol;
+    private int Phys;
+    private int Chem;
+    private FieldPercentages fieldPercentages;
+    private int proposalQuality;
     Result(){
         int Biol = 0;
         int Phys = 0;
@@ -18,6 +18,30 @@ class Result{
         Biol = (int) (fieldPercentages.Biol * proposalQuality);
         Phys = (int) (fieldPercentages.Phys * proposalQuality);
         Chem = (int) (fieldPercentages.Chem * proposalQuality);
+    }
+
+    public int getBiol() {
+        return Biol;
+    }
+
+    public void setBiol(int biol) {
+        Biol = biol;
+    }
+
+    public int getPhys() {
+        return Phys;
+    }
+
+    public void setPhys(int phys) {
+        Phys = phys;
+    }
+
+    public int getChem() {
+        return Chem;
+    }
+
+    public void setChem(int chem) {
+        Chem = chem;
     }
 }
 

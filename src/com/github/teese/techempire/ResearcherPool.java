@@ -29,43 +29,41 @@ public class ResearcherPool{
         }
         return resPool;
     }
-    static ArrayList<Researcher> fromCSV(int numResearchers){
+    static ArrayList<Researcher> fromCSV(int numResearchers, String researchersCSV){
         ArrayList<Researcher> resPool;
         resPool = new ArrayList<>();
 
-        String csvFile = "S:\\m_cloud\\Dropbox\\javalearn\\techempire\\research\\MT_endnote_gscholar.csv";
+        //String researchersCSV = "S:\\m_cloud\\Dropbox\\javalearn\\techempire\\research\\MT_endnote_gscholar.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
 
-        System.out.println("AT LEAST I REACHED HERE 1");
-
         ArrayList<Integer> randomRowList = new ArrayList<>();
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile), "UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(researchersCSV), "UTF-8"));
             //BufferedReader bufferedReader = new BufferedReader(new FileReader(csvFile));
 
             // get a random selection of rows from the entire length of the CSV
             int csvLength = 0;
             while ((line = bufferedReader.readLine()) != null) {csvLength++;}
-            System.out.println("csvLength " + csvLength);
+            System.out.println("Your input csv file contains " + csvLength + " researchers.\n" +
+                    "Researchers in your researcher pool : \n");
 
             while (randomRowList.size() < numResearchers){
                 int randomRow = (int) (Math.random() * csvLength + 1);
                 randomRowList.add(randomRow);
             }
-            for (int a : randomRowList){System.out.print(a + ", ");}
         } catch (IOException e) {
-            e.printStackTrace();
+            printError();
+            System.exit(1);
         }
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile), "UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(researchersCSV), "UTF-8"));
             int n = 0;
             while ((line = bufferedReader.readLine()) != null) {
 
                 String[] L = line.split(cvsSplitBy);
-                //if (n==0) System.out.println(line);
 
                 if (randomRowList.contains(n)) {
                     Researcher r = new Researcher();
@@ -80,17 +78,23 @@ public class ResearcherPool{
                     r.setPurity((float) Math.random());
                     r.setQuality(Researcher.generateRandomQuality(r.gethIndex(), r.getAge()));
                     resPool.add(r);
-                    System.out.println("Researcher added to pool : " + r.getName());
+                    System.out.println(String.format("%s (%s)", r.getName(), r.getAffiliation()));
                 }
                 n++;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            printError();
+            System.exit(1);
         }
         return resPool;
     }
     public static boolean contains(final int[] arr, final int key) {
         return Arrays.stream(arr).anyMatch(i -> i == key);
+    }
+    static void printError(){
+        System.out.println("Oops, there seems to be a problem with your input researchers-CSV file.");
+        System.out.println("In Windows, use a double-backslash in filenames.");
+        System.out.println(Main.exampleCommand);
     }
 }
 /*

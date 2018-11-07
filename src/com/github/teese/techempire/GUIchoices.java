@@ -1,5 +1,12 @@
 package com.github.teese.techempire;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.JPanel;
+import javax.swing.UIDefaults;
+import javax.swing.LookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -7,29 +14,21 @@ import java.util.HashMap;
 import javax.swing.UIManager.*;
 
 
-public class GUI implements ActionListener, Runnable{
+public class GUIchoices implements ActionListener, Runnable{
     private JFrame frame;
     private HashMap<String,String> map;
     private int myChoice;
     private ArrayList<GrantApplication> choices;
-//    JButton projButton0;
-//    JButton projButton1;
-//    JButton projButton2;
-//    JButton projButton3;
-
     private ArrayList<GrantApplication> grantApplicationList;
-    // GrantApplication[] grantApplicationList;
     private ArrayList<String> buttonTextList;
     private ArrayList<JButton> jButtonList;
-
     private MyCentrePanel centrePanel;
     private MyNorthPanel northPanel;
     private JLabel northLabel;
-
     private Timer timer;
     private ResettableCountDownLatch latch;
 
-    GUI(ResettableCountDownLatch latch){
+    GUIchoices(ResettableCountDownLatch latch){
         // get the latch from the main thread or process
         // this can be reset, saving the effort of creating new latches for each choice
         this.latch = latch;
@@ -43,16 +42,7 @@ public class GUI implements ActionListener, Runnable{
         buttonTextList = new ArrayList<>();
         jButtonList = new ArrayList<>();
         timer = new Timer(1, this);
-        try {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // If Nimbus is not available, you can set the GUI to another look and feel.
-        }
+        setNimbusLookAndFeel();
 
         frame = new JFrame();
         // DISPOSE_ON_CLOSE: set frame to close but Java to continue, if X is pressed.This is actually the default
@@ -64,6 +54,7 @@ public class GUI implements ActionListener, Runnable{
         northPanel = new MyNorthPanel();
         //JButton northButton = new JButton("Pick a researcher to fund");
         northLabel = new JLabel("Pick a researcher to fund");
+        northLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         northPanel.add(northLabel);
 
         centrePanel = new MyCentrePanel();
@@ -80,9 +71,38 @@ public class GUI implements ActionListener, Runnable{
             buttonTextList.add(buttonText);
             map.put(buttonText, ""+i);
             JButton projButton = new JButton(buttonText);
+            projButton.setFont(new Font("Arial", Font.PLAIN, 20));
+            //projButton.setBackground(Color.CYAN);
             projButton.addActionListener(this);
             jButtonList.add(projButton);
             centrePanel.add(projButton);
+        }
+    }
+
+    public static void setNimbusLookAndFeel() {
+        Color baseColor = new Color(45, 171, 191);
+        Color BlueGreyButtonColor = new Color(171, 215, 215);
+        Color controlBackgroundColor = new Color(45, 171, 191);
+        try {
+            UIManager.put("nimbusBase", baseColor);
+            UIManager.put("nimbusBlueGrey", BlueGreyButtonColor);
+            UIManager.put("control", controlBackgroundColor);
+
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("OOPS, NIMBUS GUI LOOKANDFEEL IS NOT WORKING!");
+            // If Nimbus is not available, you can set the GUI to another look and feel.
         }
     }
 
@@ -99,7 +119,7 @@ public class GUI implements ActionListener, Runnable{
         // get the choice number
         String myChoiceStr = map.get(s);
         myChoice = Integer.parseInt(myChoiceStr);
-        System.out.println("you chose " + myChoice + ", " + choices.get(myChoice).getResearcher().getName());
+        System.out.println("\nGrant Application by " + choices.get(myChoice).getResearcher().getName() + ".");
         // display a new selection of choices
         resetButtonsAndHashmap();
         frame.repaint();
